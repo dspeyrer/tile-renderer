@@ -28,24 +28,6 @@ class __Storage__:
     def writefile(self, file, data):
         raise NotImplementedError
 
-
-''' STORES ANY OBJECT AS BINARY FILE '''
-
-
-class __BinaryStorage__(__Storage__):
-    ext = '.bin'
-    encoding = 'b'
-
-    def parsefile(self, file):
-        return pickle.load(file)
-
-    def writefile(self, file, data):
-        return pickle.dump(data, file, pickle.DEFAULT_PROTOCOL)
-
-
-''' STORES DICTIONARY OBJECT AS A TXT FILE '''
-
-
 class __ConfStorage__(__Storage__):
     ext = '.txt'
     encoding = 't'

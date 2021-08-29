@@ -9,9 +9,9 @@ class Entity:
 
 
 class Player(Entity):
-    accel_max = 0.2
-    speed_max = 1
-    friction = 0.6
+    accel_max = 0.1
+    speed_max = 0.5
+    friction = 0.9
 
     def simulate(self, move):
         accel = pygame.math.Vector2(
@@ -43,8 +43,8 @@ class Player(Entity):
 
         if not round(self.Velocity.length(), 2) == 0:
             self.Velocity.scale_to_length(new_speed)
-            self.Pos.x += self.Velocity.x
-            self.Pos.y += self.Velocity.y
+            self.Pos.x += self.Velocity.x * self.Client.time
+            self.Pos.y += self.Velocity.y * self.Client.time
 
         self.Client.Frame.Pos.x = self.Pos.x
         self.Client.Frame.Pos.y = self.Pos.y

@@ -4,7 +4,9 @@ import math
 
 class Viewport:
     zoom_speed = 2
-    zoom_friction = 0.2
+    zoom_friction = 0.8
+    zoom_max = 64
+    zoom_min = 5
 
     def __init__(self, Client, pos, zoom):
         self.Pos = pygame.math.Vector2(pos)
@@ -23,6 +25,7 @@ class Viewport:
         relativePos = [math.floor(
             self.Pos.x - relativeSize[0] / 2), math.floor(self.Pos.y - relativeSize[1] / 2)]
 
+
         if relativePos[0] < -relativeSize[0] or relativePos[1] < -relativeSize[1]:
             relativeSize = [0, 0]
 
@@ -33,8 +36,8 @@ class Viewport:
 
         counter = 0
 
-        for i in range(max(0, relativePos[1]), relativePos[1] + relativeSize[1]):
-            for j in range(max(0, relativePos[0]), relativePos[0] + relativeSize[0]):
+        for i in range(max(0, relativePos[1]), min(len(Level.Map), relativePos[1] + relativeSize[1] + 1)):
+            for j in range(max(0, relativePos[0]), min(len(Level.Map[i]), relativePos[0] + relativeSize[0] + 1)):
                 Level.Map[i][j].render()
                 counter += 1
 
@@ -52,8 +55,19 @@ class Viewport:
 
         if zoom == 0:
             self.ZoomVel *= self.zoom_friction
+            self.ZoomVel = math.trunc(self.ZoomVel * 1000) / 1000
 
-        self.Zoom = self.Zoom + self.ZoomVel
+        self.Zoom += self.ZoomVel * self.Client.time
+
+        if self.Zoom < self.zoom_min:
+          self.Zoom = self.zoom_min
+          self.ZoomVel = 0
+
+        if self.Zoom > self.zoom_max:
+          self.Zoom = self.zoom_max
+          self.ZoomVel = 0
+
+        self.Client.debug("zoom velocity: " + str(self.ZoomVel))
 
     def updateDimensions(self, size):
         self.Size = pygame.math.Vector2(size)

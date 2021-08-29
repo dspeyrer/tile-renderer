@@ -9,12 +9,14 @@ import pygame.locals
 
 class Client:
     KillProcess = False
+    time = None
 
     def __init__(self, options):
         self.options = options
         self.screen = pygame.display.set_mode(
-            options.get("resolution"), (pygame.FULLSCREEN if options.get("isFullscreen") == True else 0) + pygame.RESIZABLE)
+            options.get("resolution"), (pygame.FULLSCREEN if options.get("isFullscreen") == True else 0) | pygame.RESIZABLE)
         self.clock = pygame.time.Clock()
+        self.framerate = self.options.get('framerate')
         pygame.display.set_caption('Python Technology Project')
         pygame.display.set_icon(Utils.Img('icon'))
         pygame.font.init()
@@ -26,7 +28,7 @@ class Client:
 
         self.Level = Level.Level(
             self, {
-                "mapOld": [[random.randint(0, 1) for i in range(10)] for i in range(10)],
+                "mapOld": [[random.randint(0, 1) for i in range(50)] for i in range(50)],
                 "playerPos": (0, 0)
             })
         self.Level.postInit()
@@ -38,6 +40,8 @@ class Client:
             self.main()
 
     def main(self):
+        self.time = self.clock.tick(self.framerate) / (1000 / self.framerate)
+
         # PROCESS INPUT
 
         keypress = []
@@ -52,7 +56,7 @@ class Client:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     zoom = 1
-                if event.button == 5 and self.Frame.Zoom > 5:
+                if event.button == 5:
                     zoom = -1
             elif event.type == pygame.VIDEORESIZE:
                 self.Frame.updateDimensions(event.size)
@@ -82,7 +86,6 @@ class Client:
         self.debugQueue = []
 
         pygame.display.flip()
-        self.clock.tick()
         self.debug(str(self.clock.get_fps()) + ' fps')
 
     def debug(self, text):
